@@ -1,36 +1,67 @@
-# Olympic Track Results Database
-# Milestone 2 - Encryption and User Authentication
+import os
 
-
-def encrypt_password(password):
+def encrypt(text):
     encrypted = ""
 
-    for i in range(len(password)):
-        character = password[i]
-
-        # Different positions use different shift amounts
+    for i in range(len(text)):
         if i % 2 == 0:
-            shift = 3
+            encrypted += chr(ord(text[i]) + 3)
         else:
-            shift = 5
-
-        new_character = chr(ord(character) + shift)
-        encrypted += new_character
+            encrypted += chr(ord(text[i]) + 5)
 
     return encrypted
 
 
-def main():
-    print("Olympic Track Results Database")
-    print("------------------------------")
+print("Olympic Track Results Database")
+print()
+print("1. Create an Account")
+print("2. Log In")
 
-    # Temporary test of our encryption algorithm
+choice = input("Enter choice: ")
+
+
+if choice == "1":
+    username = input("Enter a username: ")
     password = input("Enter a password: ")
 
-    encrypted_password = encrypt_password(password)
+    encrypted_password = encrypt(password)
 
-    print("Original password:", password)
-    print("Encrypted password:", encrypted_password)
+    file = open("users.txt", "a")
+    file.write(username + "," + encrypted_password + "\n")
+    file.close()
+
+    print("Account created successfully!")
 
 
-main()
+elif choice == "2":
+
+    if os.path.exists("users.txt"):
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
+
+        encrypted_password = encrypt(password)
+
+        file = open("users.txt", "r")
+
+        login_successful = False
+
+        for line in file:
+            account = line.strip().split(",")
+
+            if username == account[0] and encrypted_password == account[1]:
+                login_successful = True
+
+        file.close()
+
+        if login_successful:
+            print("Login successful!")
+            print("Welcome to the Olympic Track Results Database!")
+        else:
+            print("Incorrect username or password.")
+
+    else:
+        print("No accounts have been created yet.")
+
+
+else:
+    print("Invalid choice.")
